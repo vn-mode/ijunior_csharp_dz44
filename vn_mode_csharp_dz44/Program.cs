@@ -53,8 +53,8 @@ namespace TrainPlanner
 
     class TrainDirection
     {
-        public string Departure { get; set; }
-        public string Destination { get; set; }
+        public string Departure { get; private set; }
+        public string Destination { get; private set; }
 
         public TrainDirection(string departure, string destination)
         {
@@ -97,5 +97,4 @@ namespace TrainPlanner
         public const string EnterTrainCapacity = "Введите вместимость поезда:";
         public const string EnterCarriageCapacity = "Введите вместимость вагона:";
     }
-
 }
