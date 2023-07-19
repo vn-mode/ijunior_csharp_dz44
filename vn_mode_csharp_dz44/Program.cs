@@ -6,12 +6,22 @@ namespace TrainPlanner
     {
         static void Main(string[] args)
         {
-            while (true)
+            bool continueProgram = true;
+
+            while (continueProgram)
             {
                 TrainDirection direction = CreateDirection();
                 SellTickets(direction);
                 Train currentTrain = CreateTrain(direction);
                 SendTrain(currentTrain, direction);
+
+                Console.WriteLine(Constants.ContinueOrQuit);
+                string userInput = Console.ReadLine();
+
+                if (userInput.ToLower() == "q")
+                {
+                    continueProgram = false;
+                }
             }
         }
 
@@ -70,7 +80,7 @@ namespace TrainPlanner
 
     class Train
     {
-        public int Capacity { get; set; }
+        public int Capacity { get; private set; }
         public int CarriageCapacity { get; set; }
 
         public Train(int capacity, int carriageCapacity)
@@ -96,5 +106,6 @@ namespace TrainPlanner
         public const string EnterDestination = "Введите пункт назначения:";
         public const string EnterTrainCapacity = "Введите вместимость поезда:";
         public const string EnterCarriageCapacity = "Введите вместимость вагона:";
+        public const string ContinueOrQuit = "Нажмите любую клавишу, чтобы продолжить, или 'q' для выхода.";
     }
 }
