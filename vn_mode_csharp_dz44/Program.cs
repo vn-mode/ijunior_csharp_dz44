@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TrainPlanner
 {
@@ -23,7 +24,7 @@ namespace TrainPlanner
             {
                 var direction = CreateDirection();
                 int passengers = SellTickets(direction);
-                var currentTrain = CreateTrain(direction, passengers);
+                var currentTrain = CreateTrain(passengers);
                 SendTrain(currentTrain, direction);
 
                 Console.WriteLine($"Нажмите любую клавишу, чтобы продолжить, или '{QuitKey}' для выхода.");
@@ -55,7 +56,7 @@ namespace TrainPlanner
             return passengers;
         }
 
-        private Train CreateTrain(TrainDirection direction, int passengers)
+        private Train CreateTrain(int passengers)
         {
             Console.WriteLine("Введите вместимость вагона:");
             int carriageCapacity = Convert.ToInt32(Console.ReadLine());
@@ -90,18 +91,31 @@ namespace TrainPlanner
 
     class Train
     {
-        private int CarriageCapacity;
-        private int TotalCarriages;
+        private List<Carriage> Carriages = new List<Carriage>();
 
         public Train(int passengers, int carriageCapacity)
         {
-            CarriageCapacity = carriageCapacity;
-            TotalCarriages = (int)Math.Ceiling((double)passengers / carriageCapacity);
+            int totalCarriages = (int)Math.Ceiling((double)passengers / carriageCapacity);
+
+            for (int i = 0; i < totalCarriages; i++)
+            {
+                Carriages.Add(new Carriage(carriageCapacity));
+            }
         }
 
         public void DisplayInfo()
         {
-            Console.WriteLine($"Информация о поезде: Вместимость: {TotalCarriages * CarriageCapacity}, Вагонов: {TotalCarriages}");
+            Console.WriteLine($"Информация о поезде: Вместимость: {Carriages.Count * Carriages[0].Capacity}, Вагонов: {Carriages.Count}");
+        }
+    }
+
+    class Carriage
+    {
+        public int Capacity { get; private set; }
+
+        public Carriage(int capacity)
+        {
+            Capacity = capacity;
         }
     }
 }
