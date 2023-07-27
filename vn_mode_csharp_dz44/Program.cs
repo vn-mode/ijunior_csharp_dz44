@@ -8,63 +8,97 @@ namespace TrainPlanner
         static void Main(string[] args)
         {
             var station = new TrainStation();
-            station.Start();
+            station.Run();
         }
     }
 
     class TrainStation
     {
-        private const string QuitKey = "q";
+        private const string _quitKey = "q";
+        private const int _minPassengers = 1;
+        private const int _maxPassengers = 101;
 
-        public void Start()
+        public void Run()
         {
             bool continueProgram = true;
 
             while (continueProgram)
             {
-                var direction = CreateDirection();
-                int passengers = SellTickets(direction);
-                var currentTrain = CreateTrain(passengers);
-                SendTrain(currentTrain, direction);
+                var direction = GetDirectionFromUser();
 
-                Console.WriteLine($"Нажмите любую клавишу, чтобы продолжить, или '{QuitKey}' для выхода.");
+                if (direction == null)
+                {
+                    continue;
+                }
+
+                int passengers = SellTickets();
+                var carriages = CreateCarriages(passengers);
+
+                if (carriages == null)
+                {
+                    continue;
+                }
+
+                var currentTrain = new Train(direction, carriages);
+                SendTrain(currentTrain);
+
+                Console.WriteLine($"Нажмите любую клавишу, чтобы продолжить, или '{_quitKey}' для выхода.");
                 string userInput = Console.ReadLine();
 
-                if (userInput.ToLower() == QuitKey)
+                if (userInput.ToLower() == _quitKey)
                 {
                     continueProgram = false;
                 }
             }
         }
 
-        private TrainDirection CreateDirection()
+        private TrainDirection GetDirectionFromUser()
         {
             Console.WriteLine("Введите пункт отправления:");
             string departure = Console.ReadLine();
             Console.WriteLine("Введите пункт назначения:");
             string destination = Console.ReadLine();
-            var direction = new TrainDirection(departure, destination);
-            direction.DisplayInfo();
-            return direction;
+
+            if (departure == destination)
+            {
+                Console.WriteLine("Пункт отправления не может быть тем же самым, что и пункт назначения.");
+                return null;
+            }
+
+            return new TrainDirection(departure, destination);
         }
 
-        private int SellTickets(TrainDirection direction)
+        private int SellTickets()
         {
             Random random = new Random();
-            int passengers = random.Next(1, 101);
+            int passengers = random.Next(_minPassengers, _maxPassengers);
             Console.WriteLine($"Продано билетов: {passengers}");
             return passengers;
         }
 
-        private Train CreateTrain(int passengers)
+        private List<Carriage> CreateCarriages(int passengers)
         {
             Console.WriteLine("Введите вместимость вагона:");
-            int carriageCapacity = Convert.ToInt32(Console.ReadLine());
-            var currentTrain = new Train(passengers, carriageCapacity);
-            return currentTrain;
+
+            if (!int.TryParse(Console.ReadLine(), out int carriageCapacity) || carriageCapacity <= 0)
+            {
+                Console.WriteLine("Недопустимая вместимость вагона.");
+                return null;
+            }
+
+            int totalCarriages = (int)Math.Ceiling((double)passengers / carriageCapacity);
+
+            var carriages = new List<Carriage>();
+
+            for (int i = 0; i < totalCarriages; i++)
+            {
+                carriages.Add(new Carriage(carriageCapacity));
+            }
+
+            return carriages;
         }
 
-        private void SendTrain(Train currentTrain, TrainDirection direction)
+        private void SendTrain(Train currentTrain)
         {
             Console.WriteLine("Поезд отправлен!");
             currentTrain.DisplayInfo();
@@ -74,38 +108,36 @@ namespace TrainPlanner
 
     class TrainDirection
     {
-        private string Departure;
-        private string Destination;
+        private string _departure;
+        private string _destination;
 
         public TrainDirection(string departure, string destination)
         {
-            Departure = departure;
-            Destination = destination;
+            _departure = departure;
+            _destination = destination;
         }
 
         public void DisplayInfo()
         {
-            Console.WriteLine($"Текущее направление: {Departure} - {Destination}");
+            Console.WriteLine($"Текущее направление: {_departure} - {_destination}");
         }
     }
 
     class Train
     {
-        private List<Carriage> Carriages = new List<Carriage>();
+        private List<Carriage> _carriages;
+        private TrainDirection _direction;
 
-        public Train(int passengers, int carriageCapacity)
+        public Train(TrainDirection direction, List<Carriage> carriages)
         {
-            int totalCarriages = (int)Math.Ceiling((double)passengers / carriageCapacity);
-
-            for (int i = 0; i < totalCarriages; i++)
-            {
-                Carriages.Add(new Carriage(carriageCapacity));
-            }
+            _direction = direction;
+            _carriages = carriages;
         }
 
         public void DisplayInfo()
         {
-            Console.WriteLine($"Информация о поезде: Вместимость: {Carriages.Count * Carriages[0].Capacity}, Вагонов: {Carriages.Count}");
+            Console.WriteLine($"Информация о поезде: Вместимость: {_carriages.Count * _carriages[0].Capacity}, Вагонов: {_carriages.Count}");
+            _direction.DisplayInfo();
         }
     }
 
