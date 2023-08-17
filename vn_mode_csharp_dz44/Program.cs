@@ -7,24 +7,21 @@ namespace TrainPlanner
     {
         static void Main(string[] args)
         {
-            var station = new TrainStation();
+            TrainStation station = new TrainStation();
             station.Run();
         }
     }
 
     class TrainStation
     {
-        private const string _quitKey = "q";
-        private const int _minPassengers = 1;
-        private const int _maxPassengers = 101;
-
         public void Run()
         {
-            bool continueProgram = true;
+            const string _QuitKey = "q";
+            bool isContinueProgram = true;
 
-            while (continueProgram)
+            while (isContinueProgram)
             {
-                var direction = GetDirectionFromUser();
+                TrainDirection direction = GetDirectionFromUser();
 
                 if (direction == null)
                 {
@@ -32,22 +29,22 @@ namespace TrainPlanner
                 }
 
                 int passengers = SellTickets();
-                var carriages = CreateCarriages(passengers);
+                List<Carriage> carriages = CreateCarriages(passengers);
 
                 if (carriages == null)
                 {
                     continue;
                 }
 
-                var currentTrain = new Train(direction, carriages);
+                Train currentTrain = new Train(direction, carriages);
                 SendTrain(currentTrain);
 
-                Console.WriteLine($"Нажмите любую клавишу, чтобы продолжить, или '{_quitKey}' для выхода.");
+                Console.WriteLine($"Нажмите любую клавишу, чтобы продолжить, или '{_QuitKey}' для выхода.");
                 string userInput = Console.ReadLine();
 
-                if (userInput.ToLower() == _quitKey)
+                if (userInput.ToLower() == _QuitKey)
                 {
-                    continueProgram = false;
+                    isContinueProgram = false;
                 }
             }
         }
@@ -70,8 +67,11 @@ namespace TrainPlanner
 
         private int SellTickets()
         {
+            const int _MinPassengers = 1;
+            const int _MaxPassengers = 101;
+
             Random random = new Random();
-            int passengers = random.Next(_minPassengers, _maxPassengers);
+            int passengers = random.Next(_MinPassengers, _MaxPassengers);
             Console.WriteLine($"Продано билетов: {passengers}");
             return passengers;
         }
@@ -88,7 +88,7 @@ namespace TrainPlanner
 
             int totalCarriages = (int)Math.Ceiling((double)passengers / carriageCapacity);
 
-            var carriages = new List<Carriage>();
+            List<Carriage> carriages = new List<Carriage>();
 
             for (int i = 0; i < totalCarriages; i++)
             {
