@@ -16,7 +16,8 @@ namespace TrainPlanner
     {
         public void Run()
         {
-            const string _QuitKey = "q";
+            const string QuitKey = "q";
+
             bool isContinueProgram = true;
 
             while (isContinueProgram)
@@ -39,10 +40,10 @@ namespace TrainPlanner
                 Train currentTrain = new Train(direction, carriages);
                 SendTrain(currentTrain);
 
-                Console.WriteLine($"Нажмите любую клавишу, чтобы продолжить, или '{_QuitKey}' для выхода.");
+                Console.WriteLine($"Нажмите любую клавишу, чтобы продолжить, или '{QuitKey}' для выхода.");
                 string userInput = Console.ReadLine();
 
-                if (userInput.ToLower() == _QuitKey)
+                if (userInput.ToLower() == QuitKey)
                 {
                     isContinueProgram = false;
                 }
@@ -67,11 +68,11 @@ namespace TrainPlanner
 
         private int SellTickets()
         {
-            const int _MinPassengers = 1;
-            const int _MaxPassengers = 101;
+            const int MinPassengers = 1;
+            const int MaxPassengers = 101;
 
             Random random = new Random();
-            int passengers = random.Next(_MinPassengers, _MaxPassengers);
+            int passengers = random.Next(MinPassengers, MaxPassengers);
             Console.WriteLine($"Продано билетов: {passengers}");
             return passengers;
         }
